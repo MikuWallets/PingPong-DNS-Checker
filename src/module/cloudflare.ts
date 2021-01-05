@@ -19,7 +19,8 @@ export class CloudFlareApi {
       const body = JSON.stringify({
         type: "A",
         name: i.domain,
-        content: ip
+        content: ip,
+        proxied: true
       });
       const options = {
         hostname: "api.cloudflare.com",
@@ -31,8 +32,7 @@ export class CloudFlareApi {
           'X-Auth-Key': this.apiKey,
           'Content-Type': 'application/json; charset=utf-8',
           'Content-Length': body.length
-        },
-        timeout: 3000
+        }
       };
 
 
