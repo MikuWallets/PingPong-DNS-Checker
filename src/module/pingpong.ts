@@ -37,10 +37,8 @@ export class PingPong {
     .on('error', (e) => {
       if (this.isMain) {
         console.warn(`Failed to connect with main ip, ${++this.errCount} times`);
-        if (this.errCount === this.attemptLimit) {
-          this.resCount = 0;
-          this.isMain = false;
-          // change dns to sub
+        this.resCount = 0;
+        if (this.errCount >= this.attemptLimit) {
           this.failOverSub();
         }
       }
@@ -55,7 +53,9 @@ export class PingPong {
   private failOverSub() {
     // update dns records to subip when receive response successfully
     const req = http.get(this.scheme+this.subIp, (res) => {
+      // change dns to sub
       console.log(`FAILOVER`);
+      this.isMain = false;
       this.cloudflare.updateDnsRecords(this.subIp);
     }).on('error', (e) => {
       console.log('Failed to test connection using sub ip');
